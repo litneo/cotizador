@@ -2,845 +2,942 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cotizador Pro - Software a Medida (BOB)</title>
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+        :root {
+            --app-bg: #F8FAFC;
+            --app-card: #FFFFFF;
+            --app-primary: #0D6EFD;
+            --app-text: #1E293B;
+            --app-border: #E2E8F0;
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-        .ios-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-            transition: all 0.2s ease;
+
+        body {
+            background-color: var(--app-bg);
+            color: var(--app-text);
+            margin: 0;
+            padding: 0;
         }
-        .ios-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        }
-        .app-container {
+
+        /* Full Responsive Minimalist Layout Container */
+        .main-container {
             max-width: 600px;
             margin: 0 auto;
             min-height: 100vh;
-            background-color: #f8fafc;
+            background-color: var(--app-bg);
             position: relative;
-            padding-bottom: 90px;
+            padding-bottom: 80px;
         }
-        .bottom-nav {
+
+        .ios-card {
+            background: var(--app-card);
+            border-radius: 16px;
+            border: 1px solid var(--app-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        /* Bottom Tab Bar */
+        .ios-tabbar {
+            height: 65px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--app-border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #e2e8f0;
-            z-index: 1050;
+            z-index: 1040;
+            padding-bottom: 8px;
         }
-        .nav-item-custom {
-            color: #64748b;
+
+        .tab-item {
+            color: #64748B;
+            text-align: center;
+            font-size: 11px;
             text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 500;
+            flex: 1;
             transition: color 0.2s;
         }
-        .nav-item-custom.active {
-            color: #0d6efd;
+
+        .tab-item.active {
+            color: var(--app-primary);
+            font-weight: 600;
         }
-        /* Printable Report Styles */
+
+        .tab-item i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .badge-draft { background-color: #F1F5F9; color: #475569; }
+        .badge-sent { background-color: #DBEAFE; color: #1D4ED8; }
+        .badge-approved { background-color: #DCFCE7; color: #15803D; }
+        .badge-rejected { background-color: #FEE2E2; color: #B91C1C; }
+
+        /* Print Styles for Executive PDF format */
         @media print {
             body {
                 background: white !important;
-                color: black !important;
             }
-            .no-print {
-                display: none !important;
-            }
-            .print-only {
-                display: block !important;
-            }
-            .app-container {
+            .main-container {
                 max-width: 100% !important;
                 padding: 0 !important;
-                margin: 0 !important;
             }
-            .ios-card {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
+            .ios-tabbar, .no-print {
+                display: none !important;
             }
-        }
-        .print-only {
-            display: none;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
+            .print-container {
+                display: block !important;
+                padding: 10px !important;
+                color: #000 !important;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <!-- HEADER TOP -->
-        <header class="bg-white border-bottom px-4 py-3 sticky-top d-flex justify-content-between align-items-center no-print">
+    <div class="main-container">
+        <!-- Top App Header -->
+        <header class="bg-white border-bottom px-3 py-3 sticky-top d-flex justify-content-between align-items-center no-print" style="z-index: 1030;">
             <div>
-                <h1 id="headerCompanyName" class="h5 fw-bold mb-0 text-dark">Mi Empresa de Software</h1>
-                <small id="headerCompanyNit" class="text-muted">NIT: 000000000</small>
+                <h1 id="headerCompanyName" class="fw-bold m-0 text-dark" style="font-size: 15px;">Mi Empresa de Software</h1>
+                <span id="headerCompanyNit" class="text-muted" style="font-size: 11px;">NIT: 000000000</span>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-2.5 py-1.5 rounded-pill fw-semibold">BOB (Bs.)</span>
-            </div>
+            <span class="badge bg-primary bg-opacity-15 text-primary px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight: 600;">BOB (Bs.)</span>
         </header>
 
-        <!-- MAIN VIEWS CONTAINER -->
-        <main class="p-3 p-md-4">
-
-            <!-- VIEW 1: DASHBOARD & LISTADO -->
-            <section id="viewDashboard" class="app-view">
-                <div class="row g-3 mb-4">
-                    <div class="col-6">
-                        <div class="ios-card p-3">
-                            <div class="text-muted small fw-medium mb-1">Cotizaciones</div>
-                            <div id="statTotalCount" class="h3 fw-bold mb-0 text-dark">0</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="ios-card p-3">
-                            <div class="text-muted small fw-medium mb-1">Monto Acumulado</div>
-                            <div id="statTotalAmount" class="h5 fw-bold mb-0 text-success">Bs. 0.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="h6 fw-bold text-uppercase text-secondary tracking-wider mb-0">Cotizaciones Registradas</h2>
-                    <button onclick="openNewQuotationModal()" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm">
-                        <i class="bi bi-plus-lg me-1"></i> Nueva
-                    </button>
-                </div>
-
-                <div id="quotationsListContainer" class="d-flex flex-column gap-3">
-                    <!-- Dynamic List populated by JS -->
-                </div>
-            </section>
-
-            <!-- VIEW 2: NUEVA / EDITAR COTIZACIÓN -->
-            <section id="viewEditor" class="app-view d-none">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <button onclick="switchView('viewDashboard')" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                        <i class="bi bi-arrow-left me-1"></i> Volver
-                    </button>
-                    <h2 id="editorTitle" class="h6 fw-bold mb-0 text-dark">Nueva Cotización</h2>
-                    <div style="width: 70px;"></div>
-                </div>
-
-                <div class="ios-card p-3 mb-3">
-                    <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-person-badge me-2"></i>Datos del Cliente</h6>
-                    <div class="mb-2">
-                        <label class="form-label small fw-medium text-muted">Nombre del Cliente / Empresa</label>
-                        <input type="text" id="clientName" class="form-control form-control-sm rounded-3" placeholder="Ej. Juan Pérez / Empresa S.R.L.">
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <label class="form-label small fw-medium text-muted">N° Cotización</label>
-                            <input type="text" id="quotationNumber" class="form-control form-control-sm rounded-3" readonly>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small fw-medium text-muted">Fecha de Validez</label>
-                            <input type="date" id="quotationExpiry" class="form-control form-control-sm rounded-3">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ios-card p-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0 text-primary"><i class="bi bi-boxes me-2"></i>Módulos de Software</h6>
-                        <button onclick="openCatalogModal()" class="btn btn-outline-primary btn-sm rounded-pill px-2.5 py-1">
-                            <i class="bi bi-plus me-1"></i> Añadir Módulo
-                        </button>
-                    </div>
-                    <div id="selectedModulesContainer" class="d-flex flex-column gap-2">
-                        <!-- Dynamic Selected Modules -->
-                    </div>
-                    <div id="noModulesNotice" class="text-center py-4 text-muted small">
-                        No hay módulos seleccionados. Haz clic en "Añadir Módulo" para elegir del catálogo fijo.
-                    </div>
-                </div>
-
-                <div class="ios-card p-3 mb-4 bg-light">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small text-muted">Descuento Global (%)</span>
-                        <input type="number" id="globalDiscount" class="form-control form-control-sm text-end" style="width: 90px;" value="0" min="0" max="100">
-                    </div>
-                    <hr class="my-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="h6 fw-bold mb-0 text-dark">Total Final (BOB):</span>
-                        <span id="quotationTotalDisplay" class="h5 fw-bold text-primary mb-0">Bs. 0.00</span>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button onclick="saveCurrentQuotation()" class="btn btn-primary rounded-pill py-2.5 fw-semibold shadow-sm">
-                        <i class="bi bi-check-circle me-1"></i> Guardar Cotización
-                    </button>
-                </div>
-            </section>
-
-            <!-- VIEW 3: CONFIGURACIÓN -->
-            <section id="viewSettings" class="app-view d-none">
-                <h2 class="h6 fw-bold text-uppercase text-secondary tracking-wider mb-3">Configuración de Empresa</h2>
-                
-                <div class="ios-card p-3 mb-3">
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium text-muted">Nombre de la Empresa</label>
-                        <input type="text" id="settingCompanyName" class="form-control rounded-3" placeholder="Mi Empresa de Software S.R.L.">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium text-muted">NIT / Datos Fiscales</label>
-                        <input type="text" id="settingCompanyNit" class="form-control rounded-3" placeholder="NIT: 123456789">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium text-muted">Teléfono / Contacto</label>
-                        <input type="text" id="settingCompanyPhone" class="form-control rounded-3" placeholder="+591 70000000">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium text-muted">Correo Electrónico</label>
-                        <input type="email" id="settingCompanyEmail" class="form-control rounded-3" placeholder="contacto@empresa.com">
-                    </div>
-                    <button onclick="saveSettings()" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
-                        Guardar Cambios
-                    </button>
-                </div>
-
-                <div class="ios-card p-3">
-                    <h6 class="fw-bold mb-2 text-danger">Gestión de Datos</h6>
-                    <p class="small text-muted mb-3">Restaurar valores iniciales de fábrica o respaldar cotizaciones.</p>
-                    <button onclick="resetDataToDefault()" class="btn btn-outline-danger btn-sm rounded-pill w-100">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Restaurar Catálogo y Datos
-                    </button>
-                </div>
-            </section>
-
+        <!-- Main Screen Content Area -->
+        <main class="p-3" id="appScreen">
+            <!-- Dynamic views injected here -->
         </main>
 
-        <!-- BOTTOM NAVIGATION BAR -->
-        <nav class="bottom-nav py-2 px-3 d-flex justify-content-around align-items-center no-print">
-            <a href="#" onclick="switchView('viewDashboard'); return false;" id="navDashboard" class="nav-item-custom active d-flex flex-column align-items-center">
-                <i class="bi bi-file-earmark-text fs-5"></i>
-                <span>Cotizaciones</span>
+        <!-- Bottom Tab Bar -->
+        <nav class="ios-tabbar no-print" id="iosTabbar">
+            <a href="#" class="tab-item active" onclick="switchTab('dashboard', event)">
+                <i class="bi bi-house-door-fill"></i>
+                Inicio
             </a>
-            <a href="#" onclick="switchView('viewSettings'); return false;" id="navSettings" class="nav-item-custom d-flex flex-column align-items-center">
-                <i class="bi bi-gear fs-5"></i>
-                <span>Configuración</span>
+            <a href="#" class="tab-item" onclick="switchTab('quotes', event)">
+                <i class="bi bi-file-earmark-text-fill"></i>
+                Cotizaciones
+            </a>
+            <a href="#" class="tab-item" onclick="switchTab('newQuote', event)">
+                <i class="bi bi-plus-circle-fill" style="font-size: 24px; color: var(--app-primary);"></i>
+                Crear
+            </a>
+            <a href="#" class="tab-item" onclick="switchTab('reports', event)">
+                <i class="bi bi-bar-chart-fill"></i>
+                Reportes
+            </a>
+            <a href="#" class="tab-item" onclick="switchTab('settings', event)">
+                <i class="bi bi-gear-fill"></i>
+                Ajustes
             </a>
         </nav>
-
-        <!-- CATALOG MODAL -->
-        <div class="modal fade" id="catalogModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header border-bottom-0 pb-0">
-                        <h5 class="modal-title fw-bold">Catálogo Fijo de Módulos</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="small text-muted mb-3">Selecciona los módulos precatalogados que deseas agregar a esta cotización:</p>
-                        <div id="catalogModulesList" class="d-flex flex-column gap-2">
-                            <!-- Populated via JS -->
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top-0 pt-0">
-                        <button type="button" class="btn btn-secondary rounded-pill btn-sm px-4" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- REPORT / PDF PREVIEW MODAL -->
-        <div class="modal fade" id="reportModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header border-bottom-0 pb-0 no-print">
-                        <h5 class="modal-title fw-bold">Reporte Ejecutivo de Cotización</h5>
-                        <div class="d-flex gap-2">
-                            <button onclick="window.print()" class="btn btn-dark btn-sm rounded-pill px-3">
-                                <i class="bi bi-printer me-1"></i> Imprimir / PDF
-                            </button>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                    </div>
-                    <div class="modal-body p-4" id="reportPrintableContent">
-                        <!-- Generated Executive Report HTML -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TOAST NOTIFICATION CONTAINER -->
-        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-            <div id="liveToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow" role="alert">
-                <div class="d-flex">
-                    <div id="toastMessage" class="toast-body">
-                        Operación realizada con éxito.
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        
-        // Fixed Software Modules Catalog (Cannot be modified, only added/removed from quotations)
+        // FIXED CATALOG (Non-editable modules, with standard screens and user stories)
         const FIXED_CATALOG = [
             {
                 id: 'mod_auth',
-                name: 'Módulo de Autenticación y Seguridad',
+                name: 'Autenticación & Seguridad Avanzada',
+                description: 'Login social, JWT, roles (Admin/Cliente), recuperación de contraseña.',
                 price: 2500,
-                screens: ['Login / Registro', 'Recuperación de Contraseña', 'Gestión de Roles y Permisos'],
-                stories: ['Como usuario quiero iniciar sesión de forma segura.', 'Como administrador quiero asignar roles a los operadores.']
+                screens: ['Login / Registro', 'Recuperación de Contraseña', 'Gestión de Perfil', 'Control de Roles RBAC'],
+                userStories: [
+                    'Como usuario quiero iniciar sesión con Google o Email para acceder a la plataforma.',
+                    'Como administrador quiero asignar permisos granulares por rol para proteger endpoints.'
+                ]
             },
             {
-                id: 'mod_dashboard',
-                name: 'Dashboard Ejecutivo y Analítica',
+                id: 'mod_dash',
+                name: 'Dashboard Ejecutivo & Analítica',
+                description: 'Gráficos interactivos, métricas clave en tiempo real, exportación de datos.',
                 price: 3800,
-                screens: ['Panel Principal con KPIs', 'Gráficos Estadísticos Interactivos', 'Filtros por Rango de Fechas'],
-                stories: ['Como gerente quiero ver métricas clave en tiempo real.', 'Como analista quiero exportar reportes estadísticos.']
+                screens: ['Vista General KPI', 'Gráficos de Rendimiento', 'Exportación CSV/Excel', 'Filtros por Fecha'],
+                userStories: [
+                    'Como gerente quiero visualizar KPIs clave en tiempo real para tomar decisiones.',
+                    'Como analista quiero filtrar métricas por periodos específicos.'
+                ]
             },
             {
                 id: 'mod_users',
                 name: 'Gestión Integral de Usuarios',
+                description: 'CRUD completo de usuarios, auditoría, estados de cuenta y accesos.',
                 price: 2200,
-                screens: ['Listado de Usuarios con Buscador', 'Formulario de Alta / Edición', 'Historial de Actividad'],
-                stories: ['Como administrador quiero dar de alta y baja usuarios del sistema.']
+                screens: ['Listado de Usuarios', 'Ficha de Usuario', 'Registro de Auditoría', 'Bloqueo/Activación'],
+                userStories: [
+                    'Como administrador quiero buscar y filtrar usuarios rápidamente.',
+                    'Como auditor quiero revisar el registro de accesos y cambios realizados.'
+                ]
             },
             {
-                id: 'mod_billing',
-                name: 'Módulo de Facturación y Pagos (BOB)',
+                id: 'mod_pay',
+                name: 'Pasarela de Pagos QR & Facturación',
+                description: 'Integración QR Pagosnet/BCP, tarjetas de crédito y control transaccional.',
                 price: 4500,
-                screens: ['Catálogo de Productos/Servicios', 'Generación de Recibos y Cotizaciones', 'Pasarela de Pago Simulada'],
-                stories: ['Como cajero quiero emitir comprobantes en Bolivianos.', 'Como cliente quiero revisar mis estados de cuenta.']
+                screens: ['Checkout Carrito', 'Generación de QR Dinámico', 'Historial Transacciones', 'Confirmación Webhook'],
+                userStories: [
+                    'Como cliente quiero pagar de forma segura escaneando un código QR en Bolivianos.',
+                    'Como administrador quiero verificar el estado de las transacciones en tiempo real.'
+                ]
             },
             {
-                id: 'mod_inventory',
-                name: 'Control de Inventario y Stock',
-                price: 4000,
-                screens: ['Control de Almacenes', 'Alertas de Stock Mínimo', 'Entradas y Salidas de Mercadería'],
-                stories: ['Como encargado quiero recibir alertas cuando un producto esté por agotarse.']
-            },
-            {
-                id: 'mod_notifications',
-                name: 'Centro de Notificaciones Push y Email',
-                price: 1800,
-                screens: ['Configuración de Alertas', 'Bandeja de Mensajes Internos', 'Plantillas de Correos Automáticos'],
-                stories: ['Como usuario quiero recibir alertas automáticas de mis operaciones pendientes.']
+                id: 'mod_api',
+                name: 'API REST & Backend Escalable',
+                description: 'Arquitectura Node.js/Python, documentación Swagger, base de datos optimizada.',
+                price: 5000,
+                screens: ['Documentación Swagger UI', 'Panel de Endpoints', 'Gestión de Tokens API', 'Monitoreo Server'],
+                userStories: [
+                    'Como desarrollador frontend quiero consumir endpoints documentados y seguros.',
+                    'Como DevOps quiero monitorear el rendimiento y uptime de la API.'
+                ]
             }
         ];
 
-        // Default App Settings
+        // Default Company Settings
         const DEFAULT_SETTINGS = {
-            companyName: 'Software Solutions Bolivia S.R.L.',
-            companyNit: 'NIT: 3849201018',
-            companyPhone: '+591 72100000',
-            companyEmail: 'ventas@softwaresolutions.bo'
+            companyName: 'DevStudio Bolivia S.R.L.',
+            companyNit: 'NIT: 2049182010',
+            companyPhone: '+591 70000000',
+            companyEmail: 'contacto@devstudio.bo'
         };
 
-        // Application State
-        let appState = {
-            settings: {...DEFAULT_SETTINGS},
-            quotations: []
+        // Load state from localStorage
+        let appData = {
+            settings: JSON.parse(localStorage.getItem('dev_settings_v2')) || DEFAULT_SETTINGS,
+            quotes: JSON.parse(localStorage.getItem('dev_quotes_v2')) || [
+                {
+                    id: 'COT-2026-001',
+                    clientName: 'Banco Progresivo S.A.',
+                    clientNit: '1029384019',
+                    clientEmail: 'contacto@bancoprogresivo.bo',
+                    dateEmission: '2026-03-01',
+                    dateExpiry: '2026-04-01',
+                    status: 'Aprobada',
+                    discountPercent: 5,
+                    modules: [
+                        { ...FIXED_CATALOG[0], customPrice: 2500 },
+                        { ...FIXED_CATALOG[1], customPrice: 3800 },
+                        { ...FIXED_CATALOG[3], customPrice: 4500 }
+                    ],
+                    notes: 'Incluye soporte técnico por 6 meses y capacitación al personal.'
+                }
+            ]
         };
 
-        // Current editing quotation state
-        let currentQuotation = {
-            id: null,
-            number: '',
-            clientName: '',
-            expiryDate: '',
-            modules: [], // Array of catalog items with quantities or customized items
-            globalDiscount: 0
-        };
+        function saveState() {
+            localStorage.setItem('dev_quotes_v2', JSON.stringify(appData.quotes));
+            localStorage.setItem('dev_settings_v2', JSON.stringify(appData.settings));
+        }
 
-        // DOM Loaded Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAppData();
-            initZeroInputBehavior();
-            renderDashboard();
-            updateHeaderDisplay();
+        let currentTab = 'dashboard';
+        let editingQuoteId = null;
+        let previewingQuoteId = null;
+        let windowBuilder = null;
+
+        // Requirement: Clear text/number box when focused if empty or 0
+        document.addEventListener('focusin', function(e) {
+            if (e.target.matches('input[type="number"], input[type="text"]')) {
+                if (e.target.value === '0' || e.target.value === '0.00' || e.target.value === '') {
+                    // Only clear if it's zero or empty placeholder state
+                }
+            }
         });
-
-        // Load data from LocalStorage
-        function loadAppData() {
-            const saved = localStorage.getItem('cotizador_pro_state_bo');
-            if (saved) {
-                try {
-                    appState = JSON.parse(saved);
-                } catch(e) {
-                    console.error("Error loading saved state", e);
-                }
-            } else {
-                // Initial Sample Quotation for smooth first experience
-                appState.quotations = [
-                    {
-                        id: 'quot_' + Date.now(),
-                        number: 'COT-2026-001',
-                        clientName: 'Comercializadora Andina S.R.L.',
-                        date: '2026-03-24',
-                        expiryDate: '2026-04-24',
-                        modules: [
-                            { ...FIXED_CATALOG[0], qty: 1 },
-                            { ...FIXED_CATALOG[1], qty: 1 }
-                        ],
-                        globalDiscount: 5,
-                        total: 5985
-                    }
-                ];
-                saveAppDataToStorage();
+        
+        document.addEventListener('focus', function(e) {
+            if (e.target.tagName === 'INPUT' && (e.target.value === '0' || e.target.value === '0.00')) {
+                e.target.value = '';
             }
-            
-            // Populate settings fields
-            document.getElementById('settingCompanyName').value = appState.settings.companyName;
-            document.getElementById('settingCompanyNit').value = appState.settings.companyNit;
-            document.getElementById('settingCompanyPhone').value = appState.settings.companyPhone;
-            document.getElementById('settingCompanyEmail').value = appState.settings.companyEmail;
-        }
+        }, true);
 
-        function saveAppDataToStorage() {
-            localStorage.setItem('cotizador_pro_state_bo', JSON.stringify(appState));
-        }
-
-        // Requirement 4: Automatic clearing of text/number inputs when focused if empty or 0
-        function initZeroInputBehavior() {
-            document.addEventListener('focusin', (e) => {
-                if (e.target.matches('input[type="number"], input[type="text"]')) {
-                    if (e.target.value === '0' || e.target.value === '0.00') {
-                        e.target.value = '';
-                    }
-                }
-            });
-
-            document.addEventListener('focusout', (e) => {
-                if (e.target.matches('input[type="number"]')) {
-                    if (e.target.value.trim() === '') {
-                        e.target.value = '0';
-                        e.target.dispatchEvent(new Event('input'));
-                    }
-                }
-            });
-        }
-
-        // View Switcher logic
-        function switchView(viewId) {
-            document.querySelectorAll('.app-view').forEach(el => el.classList.add('d-none'));
-            document.getElementById(viewId).classList.remove('d-none');
-
-            document.querySelectorAll('.nav-item-custom').forEach(el => el.classList.remove('active'));
-            if (viewId === 'viewDashboard') {
-                document.getElementById('navDashboard').classList.add('active');
-                renderDashboard();
-            } else if (viewId === 'viewSettings') {
-                document.getElementById('navSettings').classList.add('active');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Update Header with Company Info
-        function updateHeaderDisplay() {
-            document.getElementById('headerCompanyName').innerText = appState.settings.companyName;
-            document.getElementById('headerCompanyNit').innerText = appState.settings.companyNit;
-        }
-
-        // Save Settings
-        function saveSettings() {
-            appState.settings.companyName = document.getElementById('settingCompanyName').value.trim() || DEFAULT_SETTINGS.companyName;
-            appState.settings.companyNit = document.getElementById('settingCompanyNit').value.trim() || DEFAULT_SETTINGS.companyNit;
-            appState.settings.companyPhone = document.getElementById('settingCompanyPhone').value.trim() || DEFAULT_SETTINGS.companyPhone;
-            appState.settings.companyEmail = document.getElementById('settingCompanyEmail').value.trim() || DEFAULT_SETTINGS.companyEmail;
-            
-            saveAppDataToStorage();
+        window.onload = function() {
             updateHeaderDisplay();
-            showToast('Configuración guardada correctamente.');
+            renderScreen();
+        };
+
+        function updateHeaderDisplay() {
+            document.getElementById('headerCompanyName').innerText = appData.settings.companyName;
+            document.getElementById('headerCompanyNit').innerText = appData.settings.companyNit;
         }
 
-        function resetDataToDefault() {
-            if (confirm('¿Estás seguro de restablecer todos los datos y cotizaciones?')) {
-                localStorage.removeItem('cotizador_pro_state_bo');
-                location.reload();
+        function switchTab(tab, event) {
+            if(event) event.preventDefault();
+            currentTab = tab;
+            
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            if(tab === 'dashboard') document.querySelectorAll('.tab-item')[0].classList.add('active');
+            if(tab === 'quotes') document.querySelectorAll('.tab-item')[1].classList.add('active');
+            if(tab === 'newQuote') {
+                document.querySelectorAll('.tab-item')[2].classList.add('active');
+                initQuoteBuilder();
+            }
+            if(tab === 'reports') document.querySelectorAll('.tab-item')[3].classList.add('active');
+            if(tab === 'settings') document.querySelectorAll('.tab-item')[4].classList.add('active');
+
+            renderScreen();
+        }
+
+        function renderScreen() {
+            const screen = document.getElementById('appScreen');
+            screen.innerHTML = '';
+
+            switch(currentTab) {
+                case 'dashboard':
+                    screen.innerHTML = getDashboardHTML();
+                    break;
+                case 'quotes':
+                    screen.innerHTML = getQuotesListHTML();
+                    break;
+                case 'newQuote':
+                    screen.innerHTML = getQuoteBuilderHTML();
+                    setupBuilderEvents();
+                    break;
+                case 'reports':
+                    screen.innerHTML = getReportsHTML();
+                    break;
+                case 'settings':
+                    screen.innerHTML = getSettingsHTML();
+                    break;
+                case 'preview':
+                    screen.innerHTML = getQuotePreviewHTML(previewingQuoteId);
+                    break;
             }
         }
 
-        function renderDashboard() {
-            const container = document.getElementById('quotationsListContainer');
-            const totalCountEl = document.getElementById('statTotalCount');
-            const totalAmountEl = document.getElementById('statTotalAmount');
+        // --- DASHBOARD ---
+        function getDashboardHTML() {
+            const totalQuotes = appData.quotes.length;
+            const totalAmount = appData.quotes.reduce((acc, q) => acc + calculateQuoteTotal(q).total, 0);
+            const activeQuotes = appData.quotes.filter(q => q.status === 'Enviada' || q.status === 'Aprobada').length;
+            const today = new Date().toISOString().split('T')[0];
+            const expiredQuotes = appData.quotes.filter(q => q.dateExpiry < today && q.status !== 'Aprobada').length;
 
-            totalCountEl.innerText = appState.quotations.length;
-            
-            let sumAmount = appState.quotations.reduce((acc, q) => acc + (q.total || 0), 0);
-            totalAmountEl.innerText = formatBs(sumAmount);
-
-            if (appState.quotations.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-5 ios-card">
-                        <i class="bi bi-file-earmark-x fs-1 text-muted opacity-50"></i>
-                        <p class="text-muted small mt-2">No tienes cotizaciones registradas.</p>
-                        <button onclick="openNewQuotationModal()" class="btn btn-primary btn-sm rounded-pill px-4">Crear Primera Cotización</button>
+            let recentHTML = appData.quotes.slice(-3).reverse().map(q => {
+                const totals = calculateQuoteTotal(q);
+                return `
+                    <div class="ios-card p-3 mb-2" onclick="openPreview('${q.id}')" style="cursor: pointer;">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div>
+                                <span class="fw-bold text-dark" style="font-size: 13px;">${q.id}</span>
+                                <div class="text-secondary" style="font-size: 11px;">${q.clientName}</div>
+                            </div>
+                            <span class="badge ${getStatusBadgeClass(q.status)}" style="font-size: 10px;">${q.status}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                            <span class="text-muted" style="font-size: 11px;">Vence: ${q.dateExpiry}</span>
+                            <span class="fw-bold text-primary" style="font-size: 13px;">Bs. ${totals.total.toLocaleString('es-BO', {minimumFractionDigits: 2})}</span>
+                        </div>
                     </div>
                 `;
-                return;
-            }
+            }).join('');
 
-            container.innerHTML = appState.quotations.map(q => `
-                <div class="ios-card p-3 position-relative">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary mb-1">${q.number}</span>
-                            <h6 class="fw-bold mb-0 text-dark">${escapeHtml(q.clientName || 'Cliente sin nombre')}</h6>
-                        </div>
-                        <span class="fw-bold text-primary">${formatBs(q.total)}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
-                        <span><i class="bi bi-calendar-event me-1"></i> Emisión: ${q.date}</span>
-                        <span class="text-danger fw-medium"><i class="bi bi-clock-history me-1"></i> Vence: ${q.expiryDate}</span>
-                    </div>
-                    <div class="d-flex gap-2 justify-content-end pt-2 border-top">
-                        <button onclick="openReportModal('${q.id}')" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1">
-                            <i class="bi bi-file-earmark-pdf me-1"></i> Reporte
-                        </button>
-                        <button onclick="editQuotation('${q.id}')" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1">
-                            <i class="bi bi-pencil me-1"></i> Editar
-                        </button>
-                        <button onclick="deleteQuotation('${q.id}')" class="btn btn-outline-danger btn-sm rounded-pill px-2 py-1">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Generate next quotation number
-        function generateQuotationNumber() {
-            const count = appState.quotations.length + 1;
-            const year = new Date().getFullYear();
-            return `COT-${year}-${String(count).padStart(3, '0')}`;
-        }
-
-        function openNewQuotationModal() {
-            currentQuotation = {
-                id: 'quot_' + Date.now(),
-                number: generateQuotationNumber(),
-                clientName: '',
-                date: new Date().toISOString().split('T')[0],
-                expiryDate: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
-                modules: [],
-                globalDiscount: 0
-            };
-
-            document.getElementById('editorTitle').innerText = 'Nueva Cotización';
-            document.getElementById('clientName').value = '';
-            document.getElementById('quotationNumber').value = currentQuotation.number;
-            document.getElementById('quotationExpiry').value = currentQuotation.expiryDate;
-            document.getElementById('globalDiscount').value = 0;
-
-            renderSelectedModules();
-            switchView('viewEditor');
-        }
-
-        function editQuotation(id) {
-            const found = appState.quotations.find(q => q.id === id);
-            if (!found) return;
-
-            currentQuotation = JSON.parse(JSON.stringify(found));
-
-            document.getElementById('editorTitle').innerText = 'Editar Cotización';
-            document.getElementById('clientName').value = currentQuotation.clientName;
-            document.getElementById('quotationNumber').value = currentQuotation.number;
-            document.getElementById('quotationExpiry').value = currentQuotation.expiryDate;
-            document.getElementById('globalDiscount').value = currentQuotation.globalDiscount || 0;
-
-            renderSelectedModules();
-            switchView('viewEditor');
-        }
-
-        function deleteQuotation(id) {
-            if (confirm('¿Estás seguro de eliminar esta cotización?')) {
-                appState.quotations = appState.quotations.filter(q => q.id !== id);
-                saveAppDataToStorage();
-                renderDashboard();
-                showToast('Cotización eliminada.');
-            }
-        }
-
-        function openCatalogModal() {
-            const catalogContainer = document.getElementById('catalogModulesList');
-            catalogContainer.innerHTML = FIXED_CATALOG.map(mod => `
-                <div class="ios-card p-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">${mod.name}</h6>
-                        <div class="text-primary fw-semibold small mb-1">${formatBs(mod.price)}</div>
-                        <div class="text-muted" style="font-size: 0.75rem;">
-                            <strong>Pantallas:</strong> ${mod.screens.join(', ')}
-                        </div>
-                    </div>
-                    <button onclick="addModuleToCurrent('${mod.id}')" class="btn btn-primary btn-sm rounded-pill px-3 flex-shrink-0">
-                        <i class="bi bi-plus"></i> Añadir
-                    </button>
-                </div>
-            `).join('');
-
-            const modal = new bootstrap.Modal(document.getElementById('catalogModal'));
-            modal.show();
-        }
-
-        function addModuleToCurrent(modId) {
-            const templateMod = FIXED_CATALOG.find(m => m.id === modId);
-            if (!templateMod) return;
-
-            // Check if already added
-            const existing = currentQuotation.modules.find(m => m.id === modId);
-            if (existing) {
-                existing.qty = (existing.qty || 1) + 1;
-            } else {
-                currentQuotation.modules.push({
-                    ...templateMod,
-                    qty: 1
-                });
-            }
-
-            renderSelectedModules();
-            bootstrap.Modal.getInstance(document.getElementById('catalogModal')).hide();
-            showToast('Módulo añadido a la cotización.');
-        }
-
-        function removeModuleFromCurrent(modId) {
-            currentQuotation.modules = currentQuotation.modules.filter(m => m.id !== modId);
-            renderSelectedModules();
-        }
-
-        function updateModuleQty(modId, qty) {
-            const mod = currentQuotation.modules.find(m => m.id === modId);
-            if (mod) {
-                mod.qty = Math.max(1, parseInt(qty) || 1);
-                calculateTotal();
-            }
-        }
-
-        function renderSelectedModules() {
-            const container = document.getElementById('selectedModulesContainer');
-            const notice = document.getElementById('noModulesNotice');
-
-            if (currentQuotation.modules.length === 0) {
-                container.innerHTML = '';
-                notice.classList.remove('d-none');
-                calculateTotal();
-                return;
-            }
-
-            notice.classList.add('d-none');
-            container.innerHTML = currentQuotation.modules.map(m => `
-                <div class="border rounded-3 p-3 bg-white">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h6 class="fw-bold mb-0 text-dark">${m.name}</h6>
-                            <span class="text-primary fw-semibold small">${formatBs(m.price)} c/u</span>
-                        </div>
-                        <button onclick="removeModuleFromCurrent('${m.id}')" class="btn btn-link text-danger p-0">
-                            <i class="bi bi-trash fs-6"></i>
-                        </button>
-                    </div>
-                    <div class="small text-muted mb-2">
-                        <div><strong>Pantallas:</strong> ${m.screens.join(', ')}</div>
-                        <div><strong>Historias:</strong> ${m.stories.join(' | ')}</div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                        <span class="small text-muted">Cantidad / Licencias:</span>
-                        <input type="number" min="1" value="${m.qty || 1}" onchange="updateModuleQty('${m.id}', this.value)" class="form-control form-control-sm text-end" style="width: 70px;">
-                    </div>
-                </div>
-            `).join('');
-
-            calculateTotal();
-        }
-
-        function calculateTotal() {
-            let subtotal = currentQuotation.modules.reduce((acc, m) => acc + (m.price * (m.qty || 1)), 0);
-            
-            const discountInput = document.getElementById('globalDiscount');
-            let discountPercent = parseFloat(discountInput.value) || 0;
-            currentQuotation.globalDiscount = discountPercent;
-
-            let discountAmount = (subtotal * discountPercent) / 100;
-            let finalTotal = Math.max(0, subtotal - discountAmount);
-
-            currentQuotation.total = finalTotal;
-            document.getElementById('quotationTotalDisplay').innerText = formatBs(finalTotal);
-        }
-
-        function saveCurrentQuotation() {
-            currentQuotation.clientName = document.getElementById('clientName').value.trim() || 'Cliente General';
-            currentQuotation.expiryDate = document.getElementById('quotationExpiry').value || new Date().toISOString().split('T')[0];
-            
-            if (currentQuotation.modules.length === 0) {
-                alert('Debe agregar al menos un módulo de software a la cotización.');
-                return;
-            }
-
-            // Check if quotation already exists in array
-            const index = appState.quotations.findIndex(q => q.id === currentQuotation.id);
-            if (index >= 0) {
-                appState.quotations[index] = currentQuotation;
-            } else {
-                appState.quotations.unshift(currentQuotation);
-            }
-
-            saveAppDataToStorage();
-            switchView('viewDashboard');
-            showToast('Cotización guardada exitosamente.');
-        }
-
-        function openReportModal(id) {
-            const q = appState.quotations.find(q => q.id === id);
-            if (!q) return;
-
-            const company = appState.settings;
-            let subtotal = q.modules.reduce((acc, m) => acc + (m.price * (m.qty || 1)), 0);
-            let discountAmount = (subtotal * (q.globalDiscount || 0)) / 100;
-
-            const printableHTML = `
-                <div class="bg-white text-dark p-2">
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
-                        <div>
-                            <h3 class="fw-bold text-dark mb-1">${escapeHtml(company.companyName)}</h3>
-                            <p class="text-muted small mb-0">${escapeHtml(company.companyNit)}</p>
-                            <p class="text-muted small mb-0">Tel: ${escapeHtml(company.companyPhone)} | ${escapeHtml(company.companyEmail)}</p>
-                        </div>
-                        <div class="text-end">
-                            <h4 class="fw-bold text-primary mb-1">COTIZACIÓN</h4>
-                            <span class="badge bg-dark text-white px-3 py-1 fs-6">${q.number}</span>
-                            <p class="text-muted small mt-2 mb-0">Fecha: ${q.date}</p>
-                            <p class="text-danger small mb-0">Válido hasta: ${q.expiryDate}</p>
-                        </div>
-                    </div>
-
-                    <!-- Client Info -->
-                    <div class="bg-light p-3 rounded-3 mb-4">
-                        <h6 class="fw-bold text-uppercase text-secondary small mb-2">Cliente Destinatario:</h6>
-                        <h5 class="fw-bold mb-0 text-dark">${escapeHtml(q.clientName)}</h5>
-                    </div>
-
-                    <!-- Modules Detailed Table -->
-                    <h6 class="fw-bold text-uppercase text-secondary small mb-3">Detalle de Módulos y Especificaciones</h6>
-                    <div class="table-responsive mb-4">
-                        <table class="table table-bordered align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Módulo / Pantallas / Historias</th>
-                                    <th class="text-center" style="width: 80px;">Cant.</th>
-                                    <th class="text-end" style="width: 120px;">Precio Unit.</th>
-                                    <th class="text-end" style="width: 120px;">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${q.modules.map(m => `
-                                    <tr>
-                                        <td>
-                                            <div class="fw-bold text-dark">${m.name}</div>
-                                            <div class="small text-muted"><strong>Pantallas:</strong> ${m.screens.join(', ')}</div>
-                                            <div class="small text-muted"><strong>Historias:</strong> ${m.stories.join('; ')}</div>
-                                        </td>
-                                        <td class="text-center fw-semibold">${m.qty || 1}</td>
-                                        <td class="text-end">${formatBs(m.price)}</td>
-                                        <td class="text-end fw-semibold">${formatBs(m.price * (m.qty || 1))}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Totals (NO IVA) -->
-                    <div class="row justify-content-end mb-5">
-                        <div class="col-md-5">
-                            <div class="d-flex justify-content-between py-1 border-bottom">
-                                <span class="text-muted">Subtotal:</span>
-                                <span class="fw-semibold">${formatBs(subtotal)}</span>
-                            </div>
-                            ${q.globalDiscount > 0 ? `
-                            <div class="d-flex justify-content-between py-1 border-bottom text-success">
-                                <span>Descuento (${q.globalDiscount}%):</span>
-                                <span class="fw-semibold">- ${formatBs(discountAmount)}</span>
-                            </div>
-                            ` : ''}
-                            <div class="d-flex justify-content-between py-2 border-bottom border-dark">
-                                <span class="fw-bold h6 mb-0">Total General (BOB):</span>
-                                <span class="fw-bold h5 text-primary mb-0">${formatBs(q.total)}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Signatures / Terms -->
-                    <div class="row mt-5 pt-4 border-top text-muted small">
+            return `
+                <div class="p-1">
+                    <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <p class="mb-1"><strong>Condiciones Comerciales:</strong></p>
-                            <ul class="ps-3 mb-0">
-                                <li>Forma de pago: 50% anticipo, 50% contra entrega.</li>
-                                <li>Moneda de transacción: Bolivianos (BOB).</li>
-                                <li>Sin recargo impositivo de IVA incluido.</li>
-                            </ul>
-                        </div>
-                        <div class="col-6 text-center pt-4">
-                            <div class="border-top border-dark mx-auto w-75 pt-2">
-                                <p class="mb-0 fw-semibold text-dark">Firma Autorizada</p>
-                                <p class="mb-0 text-muted small">${escapeHtml(company.companyName)}</p>
+                            <div class="ios-card p-3">
+                                <div class="text-secondary mb-1" style="font-size: 11px;"><i class="bi bi-file-earmark-text"></i> Total Cotizado</div>
+                                <h4 class="fw-bold text-dark mb-0" style="font-size: 16px;">Bs. ${totalAmount.toLocaleString('es-BO', {maximumFractionDigits: 0})}</h4>
+                                <span class="text-muted" style="font-size: 9px;">${totalQuotes} registros</span>
                             </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="ios-card p-3">
+                                <div class="text-secondary mb-1" style="font-size: 11px;"><i class="bi bi-activity"></i> Activas / Vigentes</div>
+                                <h4 class="fw-bold text-success mb-0" style="font-size: 16px;">${activeQuotes}</h4>
+                                <span class="text-muted" style="font-size: 9px;">${expiredQuotes} vencidas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3 text-white" style="background: linear-gradient(135deg, #0D6EFD 0%, #0A58CA 100%);">
+                        <h6 class="fw-bold mb-1" style="font-size: 14px;">Nueva Propuesta de Software</h6>
+                        <p class="text-white-50 mb-2" style="font-size: 11px;">Selecciona módulos fijos del catálogo, define precios en Bolivianos y genera reportes.</p>
+                        <button class="btn btn-light btn-sm fw-semibold px-3 py-1 text-primary" style="font-size: 11px;" onclick="switchTab('newQuote')">
+                            <i class="bi bi-plus-lg"></i> Crear Cotización
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-dark mb-0" style="font-size: 13px;">Cotizaciones Recientes</h6>
+                        <a href="#" class="text-primary text-decoration-none" style="font-size: 11px;" onclick="switchTab('quotes')">Ver todas</a>
+                    </div>
+                    <div>
+                        ${recentHTML || '<p class="text-muted text-center py-3" style="font-size: 12px;">No hay cotizaciones registradas.</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- QUOTES LIST ---
+        function getQuotesListHTML() {
+            const searchTerm = document.getElementById('searchQuoteInput')?.value?.toLowerCase() || '';
+            const statusFilter = document.getElementById('statusFilterSelect')?.value || 'ALL';
+
+            const filtered = appData.quotes.filter(q => {
+                const matchSearch = q.clientName.toLowerCase().includes(searchTerm) || q.id.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'ALL' || q.status === statusFilter;
+                return matchSearch && matchStatus;
+            });
+
+            let listHTML = filtered.map(q => {
+                const totals = calculateQuoteTotal(q);
+                return `
+                    <div class="ios-card p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div>
+                                <span class="fw-bold text-primary" style="font-size: 12px;">${q.id}</span>
+                                <h6 class="fw-bold text-dark mb-0" style="font-size: 14px;">${q.clientName}</h6>
+                                <span class="text-secondary" style="font-size: 11px;">NIT: ${q.clientNit || 'S/N'}</span>
+                            </div>
+                            <span class="badge ${getStatusBadgeClass(q.status)}" style="font-size: 10px;">${q.status}</span>
+                        </div>
+                        <div class="my-2 text-secondary" style="font-size: 11px;">
+                            <div><i class="bi bi-calendar-event"></i> Emisión: ${q.dateEmission} | Vence: <span class="${q.dateExpiry < new Date().toISOString().split('T')[0] && q.status !== 'Aprobada' ? 'text-danger fw-bold' : ''}">${q.dateExpiry}</span></div>
+                            <div><i class="bi bi-layers"></i> ${q.modules.length} Módulos del catálogo</div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <span class="text-muted" style="font-size: 10px;">TOTAL BOB</span>
+                                <div class="fw-bold text-dark" style="font-size: 14px;">Bs. ${totals.total.toLocaleString('es-BO', {minimumFractionDigits: 2})}</div>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary py-1 px-2" style="font-size: 11px;" onclick="openPreview('${q.id}')" title="Ver / Imprimir">
+                                    <i class="bi bi-printer"></i>
+                                </button>
+                                <button class="btn btn-outline-primary py-1 px-2" style="font-size: 11px;" onclick="editQuote('${q.id}')" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger py-1 px-2" style="font-size: 11px;" onclick="deleteQuote('${q.id}')" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0 text-dark" style="font-size: 15px;">Listado de Cotizaciones</h5>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 11px;" onclick="switchTab('newQuote')">
+                            <i class="bi bi-plus-lg"></i> Nueva
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" id="searchQuoteInput" class="form-control border-start-0" placeholder="Buscar cliente o código..." value="${searchTerm}" oninput="renderScreen()">
+                        </div>
+                        <select id="statusFilterSelect" class="form-select form-select-sm" onchange="renderScreen()">
+                            <option value="ALL" ${statusFilter==='ALL'?'selected':''}>Todos los estados</option>
+                            <option value="Borrador" ${statusFilter==='Borrador'?'selected':''}>Borrador</option>
+                            <option value="Enviada" ${statusFilter==='Enviada'?'selected':''}>Enviada</option>
+                            <option value="Aprobada" ${statusFilter==='Aprobada'?'selected':''}>Aprobada</option>
+                            <option value="Rechazada" ${statusFilter==='Rechazada'?'selected':''}>Rechazada</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        ${listHTML || '<div class="text-center py-5 text-muted" style="font-size: 12px;">No se encontraron cotizaciones.</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- QUOTE BUILDER & EDITOR ---
+        function initQuoteBuilder() {
+            if(!editingQuoteId) {
+                const count = appData.quotes.length + 1;
+                const code = `COT-2026-${String(count).padStart(3, '0')}`;
+                const today = new Date().toISOString().split('T')[0];
+                const expiry = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+                windowBuilder = {
+                    id: code,
+                    clientName: '',
+                    clientNit: '',
+                    clientEmail: '',
+                    dateEmission: today,
+                    dateExpiry: expiry,
+                    status: 'Borrador',
+                    discountPercent: 0,
+                    modules: [],
+                    notes: 'Forma de pago: 50% anticipo, 50% contra entrega de software funcionando.'
+                };
+            }
+        }
+
+        function getQuoteBuilderHTML() {
+            const b = windowBuilder;
+            let selectedModulesHTML = b.modules.map((m, idx) => `
+                <div class="ios-card p-3 mb-2 border border-light">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                            <span class="badge bg-secondary mb-1" style="font-size: 9px;">Módulo fijo #${idx+1}</span>
+                            <h6 class="fw-bold text-dark mb-0" style="font-size: 13px;">${m.name}</h6>
+                        </div>
+                        <button class="btn btn-sm text-danger p-0" onclick="removeBuilderModule(${idx})"><i class="bi bi-x-circle-fill" style="font-size: 16px;"></i></button>
+                    </div>
+                    <p class="text-muted mb-2" style="font-size: 10px;">${m.description}</p>
+                    
+                    <div class="bg-light p-2 rounded mb-2 text-secondary" style="font-size: 10px;">
+                        <strong>Pantallas:</strong> ${m.screens.join(', ')}<br>
+                        <strong>Historias:</strong> ${m.userStories.join(' | ')}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary" style="font-size: 11px;">Precio (BOB):</span>
+                        <input type="number" class="form-control form-control-sm w-50 text-end fw-bold text-primary" value="${m.customPrice}" onchange="updateModulePrice(${idx}, this.value)">
+                    </div>
+                </div>
+            `).join('');
+
+            const totals = calculateQuoteTotal(b);
+
+            let catalogOptions = FIXED_CATALOG.map(cat => `
+                <option value="${cat.id}">${cat.name} (Bs. ${cat.price})</option>
+            `).join('');
+
+            return `
+                <div class="p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0 text-dark" style="font-size: 15px;">${editingQuoteId ? 'Editar Cotización' : 'Nueva Cotización'}</h5>
+                        <button class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 11px;" onclick="switchTab('quotes')">Cancelar</button>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-person-badge"></i> Datos del Cliente y Validez</h6>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary mb-1" style="font-size: 10px;">N° Cotización</label>
+                            <input type="text" id="builderId" class="form-control form-control-sm bg-light fw-bold" value="${b.id}" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary mb-1" style="font-size: 10px;">Nombre o Razón Social</label>
+                            <input type="text" id="builderClientName" class="form-control form-control-sm" placeholder="Ej. Empresa S.R.L." value="${b.clientName}">
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label text-secondary mb-1" style="font-size: 10px;">NIT / CI</label>
+                                <input type="text" id="builderClientNit" class="form-control form-control-sm" placeholder="Ej. 1029384" value="${b.clientNit}">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary mb-1" style="font-size: 10px;">Email Contacto</label>
+                                <input type="email" id="builderClientEmail" class="form-control form-control-sm" placeholder="correo@empresa.bo" value="${b.clientEmail}">
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label text-secondary mb-1" style="font-size: 10px;">Fecha Emisión</label>
+                                <input type="date" id="builderDateEmission" class="form-control form-control-sm" value="${b.dateEmission}">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary mb-1" style="font-size: 10px;">Fecha Límite Validez</label>
+                                <input type="date" id="builderDateExpiry" class="form-control form-control-sm" value="${b.dateExpiry}">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label text-secondary mb-1" style="font-size: 10px;">Estado</label>
+                            <select id="builderStatus" class="form-select form-select-sm">
+                                <option value="Borrador" ${b.status==='Borrador'?'selected':''}>Borrador</option>
+                                <option value="Enviada" ${b.status==='Enviada'?'selected':''}>Enviada</option>
+                                <option value="Aprobada" ${b.status==='Aprobada'?'selected':''}>Aprobada</option>
+                                <option value="Rechazada" ${b.status==='Rechazada'?'selected':''}>Rechazada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-stack"></i> Catálogo Fijo de Módulos (No Modificables)</h6>
+                        
+                        <div class="input-group input-group-sm mb-3">
+                            <select id="catalogSelector" class="form-select form-select-sm">
+                                <option value="">-- Seleccionar Módulo Fijo --</option>
+                                ${catalogOptions}
+                            </select>
+                            <button class="btn btn-primary" type="button" onclick="addModuleFromCatalog()"><i class="bi bi-plus-lg"></i> Agregar</button>
+                        </div>
+
+                        <div id="selectedModulesContainer" class="mt-2">
+                            ${selectedModulesHTML || '<p class="text-muted text-center py-2" style="font-size: 11px;">No hay módulos agregados a esta cotización.</p>'}
+                        </div>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-calculator"></i> Totales en Bolivianos (BOB) - Sin IVA</h6>
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 11px;">
+                            <span class="text-secondary">Subtotal Módulos:</span>
+                            <span class="fw-bold">Bs. ${totals.subtotal.toLocaleString('es-BO', {minimumFractionDigits: 2})}</span>
+                        </div>
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-6 text-secondary" style="font-size: 11px;">Descuento Global (%):</div>
+                            <div class="col-6">
+                                <input type="number" id="builderDiscount" class="form-control form-control-sm text-end" value="${b.discountPercent}" min="0" max="100" onchange="updateBuilderFinancials()">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top">
+                            <span class="fw-bold text-dark" style="font-size: 13px;">TOTAL GENERAL (BOB):</span>
+                            <span class="fw-bold text-primary" style="font-size: 15px;">Bs. ${totals.total.toLocaleString('es-BO', {minimumFractionDigits: 2})}</span>
+                        </div>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <label class="form-label text-secondary mb-1" style="font-size: 10px;">Términos y Notas Comerciales</label>
+                        <textarea id="builderNotes" class="form-control form-control-sm" rows="3" style="font-size: 11px;">${b.notes}</textarea>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button class="btn btn-primary fw-semibold py-2 rounded-pill" style="font-size: 13px;" onclick="saveCurrentQuote()">
+                            <i class="bi bi-check2-circle"></i> Guardar Cotización
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupBuilderEvents() {
+            document.getElementById('builderClientName')?.addEventListener('input', e => windowBuilder.clientName = e.target.value);
+            document.getElementById('builderClientNit')?.addEventListener('input', e => windowBuilder.clientNit = e.target.value);
+            document.getElementById('builderClientEmail')?.addEventListener('input', e => windowBuilder.clientEmail = e.target.value);
+            document.getElementById('builderDateEmission')?.addEventListener('change', e => windowBuilder.dateEmission = e.target.value);
+            document.getElementById('builderDateExpiry')?.addEventListener('change', e => windowBuilder.dateExpiry = e.target.value);
+            document.getElementById('builderStatus')?.addEventListener('change', e => windowBuilder.status = e.target.value);
+            document.getElementById('builderNotes')?.addEventListener('input', e => windowBuilder.notes = e.target.value);
+        }
+
+        function addModuleFromCatalog() {
+            const select = document.getElementById('catalogSelector');
+            const catId = select.value;
+            if(!catId) return;
+
+            const catalogItem = FIXED_CATALOG.find(c => c.id === catId);
+            if(catalogItem) {
+                windowBuilder.modules.push({
+                    ...catalogItem,
+                    customPrice: catalogItem.price
+                });
+                renderScreen();
+            }
+        }
+
+        function removeBuilderModule(idx) {
+            windowBuilder.modules.splice(idx, 1);
+            renderScreen();
+        }
+
+        function updateModulePrice(idx, val) {
+            windowBuilder.modules[idx].customPrice = parseFloat(val) || 0;
+            renderScreen();
+        }
+
+        function updateBuilderFinancials() {
+            windowBuilder.discountPercent = parseFloat(document.getElementById('builderDiscount').value) || 0;
+            renderScreen();
+        }
+
+        function saveCurrentQuote() {
+            const b = windowBuilder;
+            if(!b.clientName.trim()) {
+                alert('Ingrese el nombre o razón social del cliente.');
+                return;
+            }
+            if(b.modules.length === 0) {
+                alert('Debe agregar al menos un módulo de software.');
+                return;
+            }
+
+            const existingIdx = appData.quotes.findIndex(q => q.id === b.id);
+            if(existingIdx >= 0) {
+                appData.quotes[existingIdx] = { ...b };
+            } else {
+                appData.quotes.push({ ...b });
+            }
+
+            saveState();
+            editingQuoteId = null;
+            switchTab('quotes');
+        }
+
+        function editQuote(id) {
+            const q = appData.quotes.find(item => item.id === id);
+            if(q) {
+                editingQuoteId = id;
+                windowBuilder = JSON.parse(JSON.stringify(q));
+                currentTab = 'newQuote';
+                renderScreen();
+            }
+        }
+
+        function deleteQuote(id) {
+            if(confirm(`¿Está seguro de eliminar la cotización ${id}?`)) {
+                appData.quotes = appData.quotes.filter(q => q.id !== id);
+                saveState();
+                renderScreen();
+            }
+        }
+
+        // --- REPORTS & EXECUTIVE PDF PRINT VIEW ---
+        function getReportsHTML() {
+            const totalQuotes = appData.quotes.length;
+            const approved = appData.quotes.filter(q => q.status === 'Aprobada').length;
+            const pending = appData.quotes.filter(q => q.status === 'Enviada' || q.status === 'Borrador').length;
+            const totalRevenueApproved = appData.quotes.filter(q => q.status === 'Aprobada').reduce((acc, q) => acc + calculateQuoteTotal(q).total, 0);
+
+            let tableRows = appData.quotes.map(q => {
+                const totals = calculateQuoteTotal(q);
+                return `
+                    <tr>
+                        <td style="font-size: 11px;" class="fw-bold">${q.id}</td>
+                        <td style="font-size: 11px;">${q.clientName}</td>
+                        <td style="font-size: 11px;"><span class="badge ${getStatusBadgeClass(q.status)}">${q.status}</span></td>
+                        <td style="font-size: 11px;" class="text-end fw-bold">Bs. ${totals.total.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                        <td style="font-size: 11px;" class="text-center">
+                            <button class="btn btn-sm btn-outline-primary py-0 px-1" onclick="openPreview('${q.id}')"><i class="bi bi-eye"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="p-1">
+                    <h5 class="fw-bold mb-3 text-dark" style="font-size: 15px;">Reportes & Consolidado BOB</h5>
+                    
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-graph-up"></i> Resumen de Ingresos</h6>
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 11px;">
+                            <span class="text-secondary">Total Cotizaciones:</span>
+                            <span class="fw-bold">${totalQuotes}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 11px;">
+                            <span class="text-secondary">Aprobadas:</span>
+                            <span class="fw-bold text-success">${approved}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 11px;">
+                            <span class="text-secondary">Pendientes:</span>
+                            <span class="fw-bold text-warning">${pending}</span>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top" style="font-size: 12px;">
+                            <span class="fw-bold text-dark">Ingresos Aprobados (BOB):</span>
+                            <span class="fw-bold text-primary">Bs. ${totalRevenueApproved.toLocaleString('es-BO', {minimumFractionDigits: 2})}</span>
+                        </div>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-table"></i> Listado General</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 10px;">Código</th>
+                                        <th style="font-size: 10px;">Cliente</th>
+                                        <th style="font-size: 10px;">Estado</th>
+                                        <th style="font-size: 10px;" class="text-end">Total</th>
+                                        <th style="font-size: 10px;" class="text-center">Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRows || '<tr><td colspan="5" class="text-center text-muted py-3" style="font-size: 11px;">Sin datos registrados.</td></tr>'}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             `;
-
-            document.getElementById('reportPrintableContent').innerHTML = printableHTML;
-            const modal = new bootstrap.Modal(document.getElementById('reportModal'));
-            modal.show();
         }
 
-        // Utility Helpers
-        function formatBs(amount) {
-            return 'Bs. ' + (amount || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        // --- PREVIEW / PRINT PDF ---
+        function openPreview(id) {
+            previewingQuoteId = id;
+            currentTab = 'preview';
+            renderScreen();
         }
 
-        function showToast(msg) {
-            document.getElementById('toastMessage').innerText = msg;
-            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-            toast.show();
+        function getQuotePreviewHTML(id) {
+            const q = appData.quotes.find(item => item.id === id);
+            if(!q) return `<div class="p-4 text-center">Cotización no encontrada. <button class="btn btn-primary btn-sm mt-2" onclick="switchTab('quotes')">Volver</button></div>`;
+
+            const totals = calculateQuoteTotal(q);
+            const comp = appData.settings;
+
+            let modulesHTML = q.modules.map((m, idx) => `
+                <div class="mb-3 pb-2 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold" style="font-size: 12px; color: #111;">${idx+1}. ${m.name}</span>
+                        <span class="fw-bold" style="font-size: 12px; color: #111;">Bs. ${(m.customPrice || m.price).toLocaleString('es-BO', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div style="font-size: 11px; color: #555;" class="mb-1">${m.description}</div>
+                    <div style="font-size: 10px; color: #666;" class="bg-light p-1 rounded">
+                        <strong>Pantallas:</strong> ${m.screens.join(', ')}<br>
+                        <strong>Historias de Usuario:</strong> ${m.userStories.join(' | ')}
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="p-2 print-container bg-white" style="min-height: 100%;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="switchTab('quotes')"><i class="bi bi-arrow-left"></i> Volver</button>
+                        <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir / Guardar PDF</button>
+                    </div>
+
+                    <div class="text-center border-bottom pb-3 mb-3">
+                        <div class="fw-bold text-primary" style="font-size: 16px; letter-spacing: 0.5px;">${comp.companyName}</div>
+                        <div style="font-size: 10px; color: #666;">Desarrollo de Software a Medida & Arquitectura Cloud</div>
+                        <div style="font-size: 10px; color: #666;">Tel: ${comp.companyPhone} | Email: ${comp.companyEmail} | ${comp.companyNit}</div>
+                    </div>
+
+                    <div class="row mb-3" style="font-size: 11px;">
+                        <div class="col-7">
+                            <strong style="color: #333;">CLIENTE:</strong><br>
+                            <span class="fw-bold text-dark" style="font-size: 13px;">${q.clientName}</span><br>
+                            <span>NIT / CI: ${q.clientNit || 'S/N'}</span><br>
+                            <span>Email: ${q.clientEmail || 'N/A'}</span>
+                        </div>
+                        <div class="col-5 text-end">
+                            <strong style="color: #333;">PROPUESTA:</strong><br>
+                            <span class="fw-bold text-primary" style="font-size: 13px;">${q.id}</span><br>
+                            <span>Emisión: ${q.dateEmission}</span><br>
+                            <span class="fw-bold text-danger">Validez: ${q.dateExpiry}</span><br>
+                            <span>Estado: <strong>${q.status}</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold border-bottom pb-1 text-dark" style="font-size: 12px; text-transform: uppercase;">1. Arquitectura & Módulos Solicitados</h6>
+                        ${modulesHTML}
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold border-bottom pb-1 text-dark" style="font-size: 12px; text-transform: uppercase;">2. Resumen Económico ( Bolivianos - BOB )</h6>
+                        <table class="table table-sm table-borderless mb-0" style="font-size: 11px;">
+                            <tr>
+                                <td>Subtotal Módulos Software:</td>
+                                <td class="text-end fw-bold">Bs. ${totals.subtotal.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            </tr>
+                            ${q.discountPercent > 0 ? `
+                            <tr>
+                                <td>Descuento Comercial (${q.discountPercent}%):</td>
+                                <td class="text-end text-success">- Bs. ${totals.discountAmount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            </tr>` : ''}
+                            <tr class="border-top fw-bold" style="font-size: 13px;">
+                                <td class="pt-2">TOTAL GENERAL (BOB):</td>
+                                <td class="text-end pt-2 text-primary">Bs. ${totals.total.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="mb-4 bg-light p-2 rounded" style="font-size: 10px;">
+                        <strong class="text-dark">Términos y Condiciones:</strong>
+                        <p class="mb-0 text-secondary">${q.notes}</p>
+                    </div>
+
+                    <div class="row text-center mt-5 pt-4" style="font-size: 10px;">
+                        <div class="col-6">
+                            <div class="border-top pt-1 mx-3" style="border-color: #999 !important;">Aprobado Cliente</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border-top pt-1 mx-3" style="border-color: #999 !important;">${comp.companyName}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        // --- SETTINGS VIEW ---
+        function getSettingsHTML() {
+            const s = appData.settings;
+            return `
+                <div class="p-1">
+                    <h5 class="fw-bold mb-3 text-dark" style="font-size: 15px;">Ajustes de Empresa</h5>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-primary mb-2" style="font-size: 12px;"><i class="bi bi-building"></i> Configurar Datos del Emisor</h6>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary" style="font-size: 10px;">Nombre de la Empresa</label>
+                            <input type="text" id="setCompanyName" class="form-control form-control-sm" value="${s.companyName}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary" style="font-size: 10px;">NIT / Datos Fiscales</label>
+                            <input type="text" id="setCompanyNit" class="form-control form-control-sm" value="${s.companyNit}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label text-secondary" style="font-size: 10px;">Teléfono</label>
+                            <input type="text" id="setCompanyPhone" class="form-control form-control-sm" value="${s.companyPhone}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary" style="font-size: 10px;">Correo Electrónico</label>
+                            <input type="email" id="setCompanyEmail" class="form-control form-control-sm" value="${s.companyEmail}">
+                        </div>
+                        <button class="btn btn-primary btn-sm w-100" style="font-size: 12px;" onclick="saveCompanySettings()">
+                            <i class="bi bi-check2"></i> Guardar Ajustes
+                        </button>
+                    </div>
+
+                    <div class="ios-card p-3 mb-3">
+                        <h6 class="fw-bold text-danger mb-2" style="font-size: 12px;"><i class="bi bi-shield-lock"></i> Catálogo Fijo</h6>
+                        <p class="text-muted" style="font-size: 10px; margin-bottom: 8px;">Los módulos del sistema se mantienen fijos e imperturbables para garantizar la consistencia en el desglose de pantallas e historias de usuario.</p>
+                        <div class="text-secondary" style="font-size: 11px;">
+                            <strong>Módulos activos:</strong> ${FIXED_CATALOG.length} módulos estándar preconfigurados.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveCompanySettings() {
+            appData.settings.companyName = document.getElementById('setCompanyName').value.trim() || DEFAULT_SETTINGS.companyName;
+            appData.settings.companyNit = document.getElementById('setCompanyNit').value.trim() || DEFAULT_SETTINGS.companyNit;
+            appData.settings.companyPhone = document.getElementById('setCompanyPhone').value.trim() || DEFAULT_SETTINGS.companyPhone;
+            appData.settings.companyEmail = document.getElementById('setCompanyEmail').value.trim() || DEFAULT_SETTINGS.companyEmail;
+
+            saveState();
+            updateHeaderDisplay();
+            alert('¡Ajustes guardados correctamente!');
+            switchTab('dashboard');
+        }
+
+        // --- CALCULATION HELPER (NO IVA) ---
+        function calculateQuoteTotal(q) {
+            const subtotal = q.modules.reduce((acc, m) => acc + (m.customPrice !== undefined ? m.customPrice : m.price), 0);
+            const discountAmount = subtotal * ((q.discountPercent || 0) / 100);
+            const total = subtotal - discountAmount;
+            return { subtotal, discountAmount, total: total < 0 ? 0 : total };
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'Borrador': return 'badge-draft';
+                case 'Enviada': return 'badge-sent';
+                case 'Aprobada': return 'badge-approved';
+                case 'Rechazada': return 'badge-rejected';
+                default: return 'badge-draft';
+            }
         }
     </script>
 </body>
